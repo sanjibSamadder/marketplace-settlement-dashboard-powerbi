@@ -1,0 +1,20 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["SourceFilePath", "Settlement", "Transactions", "Calendar", "Product", "Orders", "Transaction Type", "Key Measures"]
+
+ref table Transactions
+ref table Calendar
+ref table Product
+ref table Orders
+ref table 'Transaction Type'
+ref table 'Key Measures'
+

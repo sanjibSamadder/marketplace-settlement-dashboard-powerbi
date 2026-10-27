@@ -1,0 +1,170 @@
+/// All report measures
+table 'Key Measures'
+	lineageTag: 721c8dab-c662-4ebd-90c5-b5431534157e
+
+	/// Everything the seller earned or was charged in the period, excluding withdrawals to the bank
+	measure 'Net Earnings' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] <> "Bank transfer" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 1 Payout
+		lineageTag: 48bd8a57-e98a-4f72-b145-2d9f061ecccb
+
+	/// Money moved from the marketplace balance to the bank
+	measure 'Bank Transfers' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Bank transfer" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 1 Payout
+		lineageTag: 7ca9fe5d-01c6-43ff-b260-d0758baaf54d
+
+	/// Net change in marketplace balance, including bank transfers
+	measure 'Balance Movement' = SUM ( Transactions[Total] )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 1 Payout
+		lineageTag: e12f200d-7b60-4197-b4b0-232a879cfbde
+
+	/// Running total of Net Earnings by date
+	measure 'Cumulative Net Earnings' = VAR _d = MAX ( 'Calendar'[Date] ) VAR _last = CALCULATE ( MAX ( Transactions[Transaction Date] ), REMOVEFILTERS ( 'Calendar' ) ) RETURN IF ( _d <= _last, CALCULATE ( [Net Earnings], 'Calendar'[Date] <= _d, ALL ( 'Calendar' ) ) )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 1 Payout
+		lineageTag: 77999684-b407-4c67-9315-208698abfaa0
+
+	/// Share of order payments the seller keeps after all deductions
+	measure 'Payout % of Sales' = DIVIDE ( [Net Earnings], [Order Payments] )
+		formatString: 0.0%
+		displayFolder: 1 Payout
+		lineageTag: 5d8f83c0-8578-4c67-a328-8005d57abffc
+
+	/// Net amount credited for sold items (after discounts and service fees)
+	measure 'Order Payments' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: 877d1d9d-233a-4ac3-b3b0-63113ad5217a
+
+	/// Retail price of items sold
+	measure 'Gross Merchandise Value' = CALCULATE ( SUM ( Transactions[Retail Price] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: 76383a25-37ce-4549-90c3-f65ea505f06f
+
+	measure 'Platform Discounts' = CALCULATE ( SUM ( Transactions[Platform Discount] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: cd7f8789-4691-4bcf-94d3-03af866cbf81
+
+	measure 'Seller Discounts' = CALCULATE ( SUM ( Transactions[Seller Discount] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: ce94d186-7eac-42b1-a93a-05fa13a3144a
+
+	/// Marketplace service fees deducted from order payments (tax incl.)
+	measure 'Service Fees' = CALCULATE ( SUM ( Transactions[Service Fee] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: c9cef697-2022-41ba-a25d-66eecc7687a3
+
+	/// Orders paid in the period
+	measure 'Paid Orders' = CALCULATE ( DISTINCTCOUNT ( Transactions[Order ID] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: #,0
+		displayFolder: 2 Sales
+		lineageTag: ce011c80-fed8-451e-8277-cf4b1a31b929
+
+	measure 'Units Sold' = CALCULATE ( SUM ( Transactions[Quantity] ), 'Transaction Type'[Category] = "Sales" )
+		formatString: #,0
+		displayFolder: 2 Sales
+		lineageTag: 64f15352-076b-47b5-b409-7b2418995bcd
+
+	measure 'Average Order Value' = DIVIDE ( [Order Payments], [Paid Orders] )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 2 Sales
+		lineageTag: 32a9fa72-bc99-45a0-8227-8b96644864e5
+
+	measure Refunds = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Refunds" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 3 Costs
+		lineageTag: 7871d142-cb9d-4cff-92d8-c3c0027729dc
+
+	/// Shipping labels bought, net of labels covered by the platform
+	measure 'Shipping Costs' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Shipping" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 3 Costs
+		lineageTag: eaded1fc-2e9a-4c5f-8a39-11109f1b8f7f
+
+	measure 'Advertising Spend' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Advertising" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 3 Costs
+		lineageTag: 00487750-8e6b-4dda-80c9-b903696ae1ce
+
+	/// Delayed fulfilment deductions, chargeback fees and similar
+	measure 'Penalties & Other Fees' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Penalties & other fees" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 3 Costs
+		lineageTag: 5f840865-6b60-47b1-96c1-c273786f269b
+
+	measure 'Ad Spend % of Sales' = DIVIDE ( - [Advertising Spend], [Order Payments] )
+		formatString: 0.0%
+		displayFolder: 3 Costs
+		lineageTag: 225a6a24-d05c-4683-a85e-d879d621ccb1
+
+	measure 'Shipping Cost per Order' = DIVIDE ( - [Shipping Costs], [Paid Orders] )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 3 Costs
+		lineageTag: dc9b3e35-eef1-40a2-8a32-ef88323f52cb
+
+	/// ISR and VAT withheld by the marketplace
+	measure 'Tax Withheld' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Tax withheld" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 4 Tax
+		lineageTag: 35de8f9e-7da6-4e7c-8952-47b001114c46
+
+	/// Withheld ISR and VAT returned by the marketplace
+	measure 'Tax Refunded' = CALCULATE ( SUM ( Transactions[Total] ), 'Transaction Type'[Category] = "Tax refunded" )
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 4 Tax
+		lineageTag: c9d2977e-40f6-47b5-82de-3e353072a221
+
+	measure 'Net Tax Impact' = [Tax Withheld] + [Tax Refunded]
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		displayFolder: 4 Tax
+		lineageTag: eae2bcf4-a493-42c8-a07b-621863e7994d
+
+	measure 'Transaction Count' = COUNTROWS ( Transactions )
+		formatString: #,0
+		displayFolder: 5 Quality
+		lineageTag: 339fea87-b60c-4914-9431-abdc0958b52e
+
+	/// Orders with any ledger movement in the period
+	measure 'Orders with Activity' = CALCULATE ( DISTINCTCOUNT ( Transactions[Order ID] ), NOT ISBLANK ( Transactions[Order ID] ) )
+		formatString: #,0
+		displayFolder: 5 Quality
+		lineageTag: 1ce3b402-afec-4cab-b769-00e46dd885fc
+
+	/// Orders charged for shipping/tax/fees in the period whose payment falls outside it
+	measure 'Orders without Payment in Period' = COUNTROWS ( FILTER ( DISTINCT ( Orders[Order ID] ), NOT ISBLANK ( CALCULATE ( COUNTROWS ( Transactions ) ) ) && ISBLANK ( [Order Payments] ) ) )
+		formatString: #,0
+		displayFolder: 5 Quality
+		lineageTag: 0f07f905-4be5-4f8a-aebd-3b0f16fa05b1
+
+	measure 'Refunded Orders' = CALCULATE ( DISTINCTCOUNT ( Transactions[Order ID] ), 'Transaction Type'[Category] = "Refunds" )
+		formatString: #,0
+		displayFolder: 5 Quality
+		lineageTag: 8a23e161-990d-41ee-be05-f6fb54ebc403
+
+	measure 'Refund Rate %' = DIVIDE ( [Refunded Orders], [Paid Orders] )
+		formatString: 0.0%
+		displayFolder: 5 Quality
+		lineageTag: aae86252-b92d-460d-98b5-096009d13a2a
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: cdf69f9a-1814-4b64-981c-83f41b46fc9f
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Key Measures' = m
+		mode: import
+		source =
+				#table(type table [Placeholder = text], {})
+
+	annotation PBI_ResultType = Table
+

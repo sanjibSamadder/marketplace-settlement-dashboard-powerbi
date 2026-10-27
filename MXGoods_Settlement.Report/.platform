@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "MXGoods_Settlement"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "bdd26de1-2515-40d4-883d-2c09cc4123c4"
+  }
+}

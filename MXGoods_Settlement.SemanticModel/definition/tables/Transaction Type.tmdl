@@ -1,0 +1,45 @@
+/// Groups the raw transaction types into reporting categories
+table 'Transaction Type'
+	lineageTag: eda8baed-c811-48b0-9363-dab17ff2c30a
+
+	column 'Transaction Type'
+		dataType: string
+		isKey
+		lineageTag: ce20d74e-d24b-46f1-afb0-f0990bd3c3a6
+		summarizeBy: none
+		sourceColumn: Transaction Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: ca165e4c-4b19-4095-bb75-1347f094510a
+		summarizeBy: none
+		sourceColumn: Category
+		sortByColumn: 'Category Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Category Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2059aaf7-e9d8-4443-a0f4-adbad51a3829
+		summarizeBy: none
+		sourceColumn: Category Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Transaction Type' = m
+		mode: import
+		source =
+				let
+				    Source = Settlement,
+				    Pick = Table.Distinct(Table.SelectColumns(Source, {"Transaction Type", "Category"})),
+				    SortOrder = [#"Sales" = 1, #"Refunds" = 2, #"Shipping" = 3, #"Advertising" = 4, #"Tax withheld" = 5, #"Tax refunded" = 6, #"Penalties & other fees" = 7, #"Bank transfer" = 8],
+				    AddSort = Table.AddColumn(Pick, "Category Sort", each Record.FieldOrDefault(SortOrder, [Category], 99), Int64.Type)
+				in
+				    AddSort
+
+	annotation PBI_ResultType = Table
+

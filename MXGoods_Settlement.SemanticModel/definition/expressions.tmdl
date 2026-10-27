@@ -1,0 +1,40 @@
+expression SourceFilePath = "C:\MXGoods_Settlement\Data\MX-GOODS_Settlement_2026-10-01_to_2026-10-19.xlsx" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 5b5e2bdd-d43b-4e37-a15b-b716587911d9
+
+	annotation PBI_ResultType = Text
+
+expression Settlement =
+		let
+		    // Settlement ledger exported from the marketplace (one row per ledger movement)
+		    // Strip quotes/spaces so a path pasted with "Copy as path" still works
+		    CleanPath = Text.Trim(SourceFilePath, {"""", " "}),
+		    Source = Excel.Workbook(File.Contents(CleanPath), null, true),
+		    FirstSheet = Table.SelectRows(Source, each [Kind] = "Sheet"){0}[Data],
+		    Promoted = Table.PromoteHeaders(FirstSheet, [PromoteAllScalars = true]),
+		    // The export stores most values as text ("0.00", "-80,466.90") and blanks as "".
+		    // Normalise every cell to trimmed text, with empty strings turned into null.
+		    AsText = Table.TransformColumns(Promoted, {}, each let t = if _ = null then null else Text.Trim(Text.From(_, "en-US")) in if t = "" then null else t),
+		    Renamed = Table.RenameColumns(AsText, {{"Date/time", "Transaction DateTime"}, {"Transaction type", "Transaction Type"}, {"Order item ID", "Order Item ID"}, {"SKU", "SKU Name"}, {"Ship city", "Ship City"}, {"Ship state", "Ship State"}, {"Retail price", "Retail Price"}, {"Platform discount", "Platform Discount"}, {"Seller discount", "Seller Discount"}, {"Service fee (tax incl.)", "Service Fee"}, {"Platform incentive", "Platform Incentive"}, {"Platform incentive - Shipping", "Platform Incentive Shipping"}}, MissingField.Ignore),
+		    // Remove thousands separators before converting, otherwise large amounts become errors
+		    Money = Table.TransformColumns(Renamed, List.Transform({"Retail Price", "Platform Discount", "Seller Discount", "Service Fee", "Platform Incentive", "Subtotal", "Shipping", "Platform Incentive Shipping", "Product Tax", "Shipping Tax", "Marketplace Withheld Tax", "Others", "Total"}, (c) => {c, each if _ = null then 0 else Number.From(Text.Remove(_, ","), "en-US"), type number})),
+		    Typed = Table.TransformColumnTypes(Money, {{"Transaction DateTime", type datetime}, {"Quantity", Int64.Type}, {"Transaction Type", type text}, {"Related ID", type text}, {"Order ID", type text}, {"Order Item ID", type text}, {"SKU Name", type text}, {"SKU ID", type text}, {"Ship City", type text}, {"Ship State", type text}, {"Currency", type text}}, "en-US"),
+		    AddDate = Table.AddColumn(Typed, "Transaction Date", each DateTime.Date([Transaction DateTime]), type date),
+		    AddCategory = Table.AddColumn(AddDate, "Category", each
+		        let t = [Transaction Type], l = Text.Lower(t) in
+		        if t = "Transfer" then "Bank transfer"
+		        else if Text.Contains(l, "withheld") and Text.Contains(l, "refund") then "Tax refunded"
+		        else if Text.StartsWith(l, "marketplace withheld") then "Tax withheld"
+		        else if Text.Contains(l, "shipping label") then "Shipping"
+		        else if Text.StartsWith(l, "advertising") then "Advertising"
+		        else if t = "Order Payment" then "Sales"
+		        else if t = "Refund" then "Refunds"
+		        else "Penalties & other fees", type text),
+		    AddIndex = Table.AddIndexColumn(AddCategory, "Row ID", 1, 1, Int64.Type)
+		in
+		    AddIndex
+	lineageTag: fb79c347-a8ef-4d00-9628-e6fff089153b
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

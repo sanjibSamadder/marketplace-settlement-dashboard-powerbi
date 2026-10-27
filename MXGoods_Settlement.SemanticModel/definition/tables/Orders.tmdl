@@ -1,0 +1,54 @@
+/// Order dimension; ship location only appears on payment/refund rows, so it is pulled up to order level
+table Orders
+	lineageTag: 271214ca-97d8-4ffc-854a-d44bf0722bb1
+
+	column 'Order ID'
+		dataType: string
+		isKey
+		lineageTag: 5bbdb38e-289e-425b-a22e-84381ebd23f0
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ship City'
+		dataType: string
+		lineageTag: 73acc2dc-a588-4bd4-87c9-1ad73956a5fd
+		summarizeBy: none
+		sourceColumn: Ship City
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ship State'
+		dataType: string
+		dataCategory: StateOrProvince
+		lineageTag: fbb167b3-dcf0-4ab7-84cc-d8f100822763
+		summarizeBy: none
+		sourceColumn: Ship State
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'First Activity'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: 0943ecd4-bce1-4b7f-9750-929faa69670d
+		summarizeBy: none
+		sourceColumn: First Activity
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = Settlement,
+				    Rows = Table.SelectRows(Source, each [Order ID] <> null),
+				    Grouped = Table.Group(Rows, {"Order ID"}, {
+				        {"Ship City", each List.First(List.RemoveNulls([Ship City]), "Unknown"), type text},
+				        {"Ship State", each List.First(List.RemoveNulls([Ship State]), "Unknown"), type text},
+				        {"First Activity", each List.Min([Transaction DateTime]), type datetime}})
+				in
+				    Grouped
+
+	annotation PBI_ResultType = Table
+

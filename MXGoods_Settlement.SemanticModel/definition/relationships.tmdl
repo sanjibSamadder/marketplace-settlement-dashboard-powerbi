@@ -1,0 +1,16 @@
+relationship 3f0bd087-58f4-4e71-9810-92e264a4b613
+	fromColumn: Transactions.'Transaction Date'
+	toColumn: Calendar.Date
+
+relationship 412bcd4f-f717-4339-a69e-1712445d6352
+	fromColumn: Transactions.'SKU ID'
+	toColumn: Product.'SKU ID'
+
+relationship 936655da-7dfc-4ac4-b21c-d329e1b03565
+	fromColumn: Transactions.'Order ID'
+	toColumn: Orders.'Order ID'
+
+relationship e8c3bbee-23b8-47e1-9657-bf3bca7dc5ee
+	fromColumn: Transactions.'Transaction Type'
+	toColumn: 'Transaction Type'.'Transaction Type'
+

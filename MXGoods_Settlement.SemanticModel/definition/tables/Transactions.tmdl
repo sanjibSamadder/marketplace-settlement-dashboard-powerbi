@@ -1,0 +1,221 @@
+/// Fact: one row per settlement ledger movement (payments, fees, taxes, shipping, ads, transfers)
+table Transactions
+	lineageTag: 99f60945-2bf7-44fb-b566-dcc403d9f932
+
+	column 'Row ID'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c1668695-6dcd-43bc-bd32-cc9ef4fdc404
+		summarizeBy: none
+		sourceColumn: Row ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Transaction DateTime'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		lineageTag: eb0e7c2e-9c5c-4b35-b15f-0b56f68cca64
+		summarizeBy: none
+		sourceColumn: Transaction DateTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Transaction Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		lineageTag: af721eb0-7c6b-42c0-bf12-994c9ea80fd5
+		summarizeBy: none
+		sourceColumn: Transaction Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Transaction Type'
+		dataType: string
+		isHidden
+		lineageTag: 088dafd0-6085-4f2d-a605-b30a870b1e98
+		summarizeBy: none
+		sourceColumn: Transaction Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Related ID'
+		dataType: string
+		lineageTag: f8bd1655-53d8-4d04-9135-0f6c24d73ee5
+		summarizeBy: none
+		sourceColumn: Related ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order ID'
+		dataType: string
+		isHidden
+		lineageTag: e9d9afc1-8445-4475-a1a9-266196598d1d
+		summarizeBy: none
+		sourceColumn: Order ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Item ID'
+		dataType: string
+		lineageTag: af04faab-0e33-4f14-b015-5db0dbe5495f
+		summarizeBy: none
+		sourceColumn: Order Item ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SKU ID'
+		dataType: string
+		isHidden
+		lineageTag: a0beb8c5-efbd-453e-9065-a5796bbcd48d
+		summarizeBy: none
+		sourceColumn: SKU ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2dc76579-a23e-40e8-90a5-b380d632d0f2
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Retail Price'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 6d7dae96-d14f-4d2d-885e-006b4cc11639
+		summarizeBy: sum
+		sourceColumn: Retail Price
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Platform Discount'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 7abf4cb9-5d65-4be5-8220-527719ce8723
+		summarizeBy: sum
+		sourceColumn: Platform Discount
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seller Discount'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 6af93b67-b956-4d51-8cb2-2c54c550a20a
+		summarizeBy: sum
+		sourceColumn: Seller Discount
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Service Fee'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 3a5382c1-c691-49e6-90e4-2b6ea3d83f61
+		summarizeBy: sum
+		sourceColumn: Service Fee
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Platform Incentive'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: b70da163-601b-41c6-86d4-3282fa1acb69
+		summarizeBy: sum
+		sourceColumn: Platform Incentive
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subtotal
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: e2200151-ba6c-485e-a207-36f96b85a697
+		summarizeBy: sum
+		sourceColumn: Subtotal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Shipping
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 1d08f2e9-f38b-4acf-9dbd-4c4b46fbe860
+		summarizeBy: sum
+		sourceColumn: Shipping
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Platform Incentive Shipping'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 34be77c1-8f1b-4aa8-bcb2-0d7748dbd916
+		summarizeBy: sum
+		sourceColumn: Platform Incentive Shipping
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Tax'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 3dce4c1d-cda5-4bba-854b-9e4928c68f42
+		summarizeBy: sum
+		sourceColumn: Product Tax
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Shipping Tax'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 1b1341ed-f8a8-4c19-9d54-f87ee1d1eeae
+		summarizeBy: sum
+		sourceColumn: Shipping Tax
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Marketplace Withheld Tax'
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: c8e84f7c-9c16-476d-a6b2-0a3b33af23b9
+		summarizeBy: sum
+		sourceColumn: Marketplace Withheld Tax
+
+		annotation SummarizationSetBy = Automatic
+
+	column Others
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: e8a8bfbe-d30a-4bd0-b99e-3e5f545e9916
+		summarizeBy: sum
+		sourceColumn: Others
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total
+		dataType: double
+		formatString: "MX$"#,0.00;-"MX$"#,0.00;"MX$"0.00
+		lineageTag: 4da71202-283f-43a2-9d8a-400d8ef5511b
+		summarizeBy: sum
+		sourceColumn: Total
+
+		annotation SummarizationSetBy = Automatic
+
+	column Currency
+		dataType: string
+		lineageTag: 85e8fe39-ff71-400d-b9c9-06a3bf8b9f3c
+		summarizeBy: none
+		sourceColumn: Currency
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Transactions = m
+		mode: import
+		source =
+				let
+				    Source = Settlement,
+				    Keep = Table.SelectColumns(Source, {"Row ID", "Transaction DateTime", "Transaction Date", "Transaction Type", "Related ID", "Order ID", "Order Item ID", "SKU ID", "Quantity", "Retail Price", "Platform Discount", "Seller Discount", "Service Fee", "Platform Incentive", "Subtotal", "Shipping", "Platform Incentive Shipping", "Product Tax", "Shipping Tax", "Marketplace Withheld Tax", "Others", "Total", "Currency"})
+				in
+				    Keep
+
+	annotation PBI_ResultType = Table
+

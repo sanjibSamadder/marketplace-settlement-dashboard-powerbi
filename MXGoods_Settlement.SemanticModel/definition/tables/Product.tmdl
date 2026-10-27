@@ -1,0 +1,44 @@
+/// Product (SKU) dimension
+table Product
+	lineageTag: b771e266-760e-4f29-ad20-3abf1027bc56
+
+	column 'SKU ID'
+		dataType: string
+		isKey
+		lineageTag: 2ad52174-db68-434c-a5f6-cd38c0552ecd
+		summarizeBy: none
+		sourceColumn: SKU ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'SKU Name'
+		dataType: string
+		lineageTag: 67be563a-2dcc-46ab-957b-0549871f2eba
+		summarizeBy: none
+		sourceColumn: SKU Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 8eaeb9f3-921e-4d15-b59d-95c8a1376f1c
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = Settlement,
+				    Rows = Table.SelectRows(Source, each [SKU ID] <> null),
+				    Pick = Table.SelectColumns(Rows, {"SKU ID", "SKU Name"}),
+				    Distinct = Table.Distinct(Pick, {"SKU ID"}),
+				    // Long marketplace titles: keep a readable short label for charts
+				    AddShort = Table.AddColumn(Distinct, "Product", each if Text.Length([SKU Name]) > 45 then Text.Start([SKU Name], 45) & "… (" & Text.End([SKU ID], 4) & ")" else [SKU Name], type text)
+				in
+				    AddShort
+
+	annotation PBI_ResultType = Table
+

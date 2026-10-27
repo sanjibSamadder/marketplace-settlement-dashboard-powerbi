@@ -1,0 +1,42 @@
+{
+  "name": "MX Settlement",
+  "dataColors": [
+    "#0F6E6E",
+    "#E07A2D",
+    "#3D5A80",
+    "#9C6644",
+    "#6A994E",
+    "#B23A48",
+    "#7D8597",
+    "#E9C46A"
+  ],
+  "foreground": "#1F2A37",
+  "background": "#FFFFFF",
+  "tableAccent": "#0F6E6E",
+  "good": "#2E7D32",
+  "neutral": "#E9C46A",
+  "bad": "#B23A48",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#1F2A37"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 24,
+      "color": "#0F6E6E"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "border": [
+          {
+            "show": false
+          }
+        ]
+      }
+    }
+  }
+}
